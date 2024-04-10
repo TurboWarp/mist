@@ -281,4 +281,6 @@ class Connection extends EventEmitter {
     }
 }
 
+Connection.CLOUD_PREFIX = CLOUD_PREFIX;
+
 module.exports = Connection;
