@@ -1,42 +1,11 @@
-# Mist
-
-A barebones library for interacting with cloud variable servers.
-
-What Mist will do for you:
-
- - A simple event-driven API
- - Automatic reconnection if the server restarts
- - Strict input validation to detect bad code early
- - Forces you to provide a valid User-Agent (if used in Node.js)
-
-What Mist won't do for you:
-
- - Encode or decode strings/lists/etc. as numbers. We just provide the means to talk to talk to cloud variables. You have to provide encoding and decoding on your own.
- - Authentication, for example to connect to clouddata.scratch.mit.edu.
- - Interacting with any other API. It's just cloud variables.
- - Rate limiting. Be reasonable, okay?
-
-You are expected to read https://docs.turbowarp.org/cloud-variables#advanced before using Mist.
-
-## Usage in Node.js
-
-Install:
-
-```bash
-npm install @turbowarp/mist
-```
-
-Simple usage:
-
-```js
-const Mist = require('@turbowarp/mist');
+const Mist = require('../src/index');
 
 const connection = new Mist({
     // Can be any text, not just numbers
-    projectId: '',
+    projectId: 'mist/test/example.js',
 
     // You must add your contact information here; see https://docs.turbowarp.org/cloud-variables#user-agent
-    userAgent: '',
+    userAgent: 'mist/test/example.js',
 
     // You can also send a username if you want but we recommend just using the default which is guaranteed
     // to always work.
@@ -86,14 +55,3 @@ const interval = setInterval(() => {
         console.log('☁ my variable is being set to', connection.get('☁ my variable'));
     }
 }, 1000);
-```
-
-## Usage in browsers
-
-It should work if you use a build tool like webpack. Only difference is that the User-Agent is not required (and is in fact ignored). Standalone script tag version to come eventually.
-
-## License
-
-This Source Code Form is subject to the terms of the Mozilla Public
-License, v. 2.0. If a copy of the MPL was not distributed with this
-file, You can obtain one at https://mozilla.org/MPL/2.0/.

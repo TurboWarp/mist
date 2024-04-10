@@ -66,7 +66,7 @@ const getRandomUsername = () => {
  */
 const hasOwn = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
 
-class CloudConnection extends EventEmitter {
+class Connection extends EventEmitter {
     /**
      * @param {Options} options
      */
@@ -166,22 +166,20 @@ class CloudConnection extends EventEmitter {
             try {
                 parsed = JSON.parse(line);
             } catch (e) {
-                this.emit('error', new Error(`Received invalid JSON from server: ${line}`));
-                return;
+                this._terminate(new Error(`Received invalid JSON from server: ${line}`));
             }
 
             if (!parsed) {
-                this.emit('error', new Error(`Received invalid object from server: ${parsed}`));
-                return;
+                this._terminate(new Error(`Received invalid object from server: ${parsed}`));
             }
 
             if (parsed.method === 'set') {
                 const {name, value} = parsed;
                 if (typeof name !== 'string') {
-                    throw new Error(`Received invalid name from server: ${name}`);
+                    this._terminate(new Error(`Received invalid name from server: ${name}`));
                 }
                 if (!isScratchCompatible(value)) {
-                    throw new Error(`Received invalid value from server: ${name}`);
+                    this._terminate(new Error(`Received invalid value from server: ${name}`));
                 }
 
                 this._mostRecentValues.set(name, value);
@@ -195,16 +193,13 @@ class CloudConnection extends EventEmitter {
 
         const code = e.code;
         if (code === 4002) {
-            this.emit('error', new Error(`Invalid username: ${this._options.username}`));
-            return;
+            this._terminate(new Error(`Invalid username: ${this._options.username}`));
         }
         if (code === 4004) {
-            this.emit('error', new Error(`Cloud variables are disabled for project: ${this._options.projectId}`));
-            return;
+            this._terminate(new Error(`Cloud variables are disabled for project: ${this._options.projectId}`));
         }
         if (code === 4006) {
-            this.emit('error', new Error(`Invalid user agent: ${this._options.userAgent}`));
-            return;
+            this._terminate(new Error(`Invalid user agent: ${this._options.userAgent}`));
         }
 
         this.emit('reconnecting');
@@ -219,15 +214,25 @@ class CloudConnection extends EventEmitter {
     }
 
     /**
+     * @param {Error} error
+     * @returns {never}
+     */
+    _terminate (error) {
+        this.close();
+        this.emit('error', error);
+        throw error;
+    }
+
+    /**
      * @param {string} name Variable name. "☁ " will be added in front if you do not include it.
      * @param {ScratchCompatibleValue} value New value.
      */
     set (name, value) {
         if (typeof name !== 'string') {
-            throw new Error(`Invalid variable name: ${name}`);
+            this._terminate(new Error(`Invalid variable name: ${name}`));
         }
         if (!isScratchCompatible(value)) {
-            throw new Error(`Invalid variable value: ${value}`);
+            this._terminate(new Error(`Invalid variable value: ${value}`));
         }
 
         name = toVariableName(name);
@@ -257,6 +262,7 @@ class CloudConnection extends EventEmitter {
         if (typeof name !== 'string') {
             throw new Error(`Invalid variable name: ${name}`);
         }
+        name = toVariableName(name);
         return this._mostRecentValues.get(name);
     }
 
@@ -275,4 +281,4 @@ class CloudConnection extends EventEmitter {
     }
 }
 
-module.exports = CloudConnection;
+module.exports = Connection;
