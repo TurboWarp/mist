@@ -10,6 +10,9 @@ const connection = new Mist({
     // You can also send a username if you want but we recommend just using the default which is guaranteed
     // to always work.
     // username: 'player2345',
+
+    // You can specify a different cloud host here:
+    // cloudHost: 'wss://clouddata.turbowarp.org',
 });
 
 connection.on('connected', () => {

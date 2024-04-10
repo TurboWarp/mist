@@ -14,6 +14,7 @@ What Mist won't do for you:
  - Encode or decode strings/lists/etc. as numbers. We just provide the means to talk to talk to cloud variables. You have to provide encoding and decoding on your own.
  - Authentication, for example to connect to clouddata.scratch.mit.edu.
  - Interacting with any other API. It's just cloud variables.
+ - A lot of customization options. We're trying to keep it simple. Mist is small enough and has few enough dependencies that forking it to meet your needs shouldn't be that hard.
  - Rate limiting. Be reasonable, okay?
 
 You are expected to read https://docs.turbowarp.org/cloud-variables#advanced before using Mist.
@@ -41,6 +42,9 @@ const connection = new Mist({
     // You can also send a username if you want but we recommend just using the default which is guaranteed
     // to always work.
     // username: 'player2345',
+
+    // You can specify a different cloud host here:
+    // cloudHost: 'wss://clouddata.turbowarp.org',
 });
 
 connection.on('connected', () => {
