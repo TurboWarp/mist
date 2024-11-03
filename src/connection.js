@@ -195,6 +195,9 @@ class Connection extends EventEmitter {
         if (code === 4002) {
             this._terminate(new Error(`Invalid username: ${this._options.username}`));
         }
+        if (code === 4003) {
+            this._terminate(new Error('Cloud variable server is full'));
+        }
         if (code === 4004) {
             this._terminate(new Error(`Cloud variables are disabled for project: ${this._options.projectId}`));
         }
